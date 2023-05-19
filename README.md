@@ -11,8 +11,6 @@ theorem hello : ∀x : Nat, x * 0 = 0
   := by smt [Nat.mul_zero]
 ```
 
-So far, this repo implements an (admittedly buggy) translation from MLTT+CIC to non-polymorphic HOL.
-
 ## How it works
 
 Hammers have three stages:
@@ -30,18 +28,20 @@ Hammers have three stages:
    the translated (HOL) problem, from which we need to create a proof for the original
    MLTT+CIC problem.
 
+So far, this repo implements an (admittedly buggy) translation from MLTT+CIC to non-polymorphic HOL.
 
 ## Setting up CVC5
 
 You can obtain CVC5 from [CVC5's GitHub Releases][cvc5].
 Tested with CVC5 1.0.2 macOS arm64.
 For some reason the newest version (1.0.5) doesn't like TPTP.
-You can then set the path to the binary via for example:
 ```lean
-set_option HoSmt.cvc5Cmd "./bin/cvc5"
+set_option HoSmt.cvc5 "./bin/cvc5"
 ```
 
-## Other Options
+## Misc
+
+### Other Options
 
 The default timeout is 3 seconds.
 You can customize that with
@@ -49,7 +49,7 @@ You can customize that with
 set_option HoSmt.time 10
 ```
 
-## Folder Structure
+### Folder Structure
 ```
 Lean-HoSmt/         Repo root (open in VSCode, run `lake build` here, etc).
     lakefile.lean       Project manifest used by `lake`.
