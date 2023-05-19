@@ -1,0 +1,8 @@
+/build
+/lake-packages/*
+
+# Usually put cvc5, zipperposition, etc in here:
+/bin
+
+# For unorganized local-only experiments:
+**/Scratch
