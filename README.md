@@ -5,7 +5,7 @@
 This repo adds a hammer tactic for Lean 4.
 ```lean
 import HoSmt
-set_option HoSmt.cvc5Cmd "./bin/cvc5" -- You need to download CVC5 yourself.
+set_option HoSmt.cvc5 "./bin/cvc5" -- You need to download CVC5 yourself.
 
 theorem hello : ∀x : Nat, x * 0 = 0
   := by smt [Nat.mul_zero]
@@ -18,7 +18,7 @@ Hammers have three stages:
    problem (i.e. Lean proof goal) we're trying to solve.
 2. *Translation*: Translate proof goal and helper lemmas from Lean to a language that the
    SMT solver will understand.
-   Lean is built on Martin-Löf type theory (MLTT) and the calculus of inductive constructions (CIC),
+   Lean is built on Martin-Löf type theory and the calculus of inductive constructions,
    whereas SMT solvers usually want non-polymorphic first or higher order logic.
    Types are converted to simple types in roughly two steps:
    1. *Type index erasure*: For example replacing `Vec α len` with a subtype
@@ -38,6 +38,13 @@ For some reason the newest version (1.0.5) doesn't like TPTP.
 ```lean
 set_option HoSmt.cvc5 "./bin/cvc5"
 ```
+
+## Documents
+This project originates from a *science internship* (in German: Praxis der Forschung) at
+[KIT](https://kit.edu/).
+There is a ["paper"](doc/2023-05-17%20Paper.pdf) describing the techniques used,
+as well as providing tons of references.
+There also is a [presentation](doc/2023-06-15%20Final%20Presentation.pdf).
 
 ## Misc
 
