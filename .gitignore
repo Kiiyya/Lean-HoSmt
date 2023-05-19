@@ -1,5 +1,6 @@
 /build
 /lake-packages/*
+**/.DS_Store
 
 # Usually put cvc5, zipperposition, etc in here:
 /bin
