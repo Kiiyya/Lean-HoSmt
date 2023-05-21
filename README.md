@@ -15,7 +15,7 @@ theorem hello : ∀x : Nat, x * 0 = 0
 
 Hammers have three stages:
 1. *Lemma Selection*: Select roughly 1000 as-relevant-as-possible helper lemmas for the
-   problem (i.e. Lean proof goal) we're trying to solve.
+   problem (i.e. Lean proof goal) we're trying to solve. Not yet implemented.
 2. *Translation*: Translate proof goal and helper lemmas from Lean to a language that the
    SMT solver will understand.
    Lean is built on Martin-Löf type theory and the calculus of inductive constructions,
@@ -26,7 +26,7 @@ Hammers have three stages:
    2. *Monomorphization*: For example occurences of `List Nat` are replaced with `ListNat`.
 3. *Proof Reconstruction*: Running the SMT solver (such as CVC5) produces a proof for
    the translated (HOL) problem, from which we need to create a proof for the original
-   MLTT+CIC problem.
+   MLTT+CIC problem. Not yet implemented.
 
 So far, this repo implements an (admittedly buggy) translation from MLTT+CIC to non-polymorphic HOL.
 
@@ -42,9 +42,21 @@ set_option HoSmt.cvc5 "./bin/cvc5"
 ## Documents
 This project originates from a *science internship* (in German: Praxis der Forschung) at
 [KIT](https://kit.edu/).
-There is a ["paper"](doc/2023-05-17%20Paper.pdf) describing the techniques used,
+
+- There is a ["paper"](doc/2023-05-17%20Paper.pdf) describing the techniques used,
 as well as providing tons of references.
-There also is a [presentation](doc/2023-06-15%20Final%20Presentation.pdf).
+- There also is a [presentation](doc/2023-06-15%20Final%20Presentation.pdf).
+
+## Acknowledgements
+
+Huge thanks goes out to [Jakob](https://github.com/javra) who helped me greatly with
+his deep knowledge of type theory,
+steering me in the right direction,
+and most importantly: For being a cool person who believed in me and helping me stay motivated :D.
+
+## Related Work
+- [Lean-smt][lean-smt] incorporates theories such as bitvectors as well, but translates to first
+  order logic.
 
 ## Misc
 
@@ -58,11 +70,13 @@ set_option HoSmt.time 10
 
 ### Folder Structure
 ```
-Lean-HoSmt/         Repo root (open in VSCode, run `lake build` here, etc).
-    lakefile.lean       Project manifest used by `lake`.
-    HoSmt.lean          "Root source file" defining the `smt` tactic.
-    HoSmt/              Source files.
+Lean-HoSmt/          Repo root (open in VSCode, run `lake build` here, etc.).
+    lakefile.lean    Project manifest used by `lake`.
+    doc/             Documentation, Presentations, etc.
+    HoSmt.lean       "Root source file" defining the `smt` tactic.
+    HoSmt/           Source files.
     ...
 ```
 
 [cvc5]: https://github.com/cvc5/cvc5/releases/tag/cvc5-1.0.2
+[lean-smt]: https://github.com/ufmg-smite/lean-smt
