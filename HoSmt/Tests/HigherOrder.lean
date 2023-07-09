@@ -1,6 +1,6 @@
 import HoSmt
-import HoSmt.Tests.Common.Vec
-import HoSmt.Tests.Common.All
+import _root_.Tests.Common.Vec
+-- import HoSmt.Tests.Common.All
 
 set_option trace.HoSmt true
 
