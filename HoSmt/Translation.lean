@@ -29,11 +29,15 @@ def traverse (expr : Expr) : TransM Expr := do
   return expr
 
 def translateGoal (g : MVarId) : TransM MVarId := do
-  let τ' <- traverse (<- g.getType)
-  let g' <- Meta.mkFreshExprMVar (some τ')
-  admitGoal g
-  replaceMainGoal [g'.mvarId!]
-  return g'.mvarId!
+  let φ <- g.getType
+  let φ' <- traverse φ
+  if φ != φ' then
+    let g' <- Meta.mkFreshExprMVar (some φ')
+    admitGoal g
+    replaceMainGoal [g'.mvarId!]
+    return g'.mvarId!
+  else
+    return g
 
 def translateConst (n : Name) : TransM Name := do
   let n := (<- IndexErasure.traverseConst n) |>.getD n

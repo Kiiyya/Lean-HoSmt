@@ -1,11 +1,11 @@
 import HoSmt
-import _root_.Tests.Common.Vec
--- import HoSmt.Tests.Common.All
+import HoSmt.Tests.Common.Vec
+import HoSmt.Tests.Common.All
 
 set_option trace.HoSmt true
 
 set_option HoSmt.shouldTranslate true in
-example : ∀xs : List Nat, xs.map (. + 1) = [2, 3] := by smt
+example : ∀xs : List Nat, xs.map (. + nat_lit 1) = [nat_lit 2, nat_lit 3] := by smt
 
 
 def List.sum : List Nat -> Nat
@@ -23,5 +23,9 @@ thf(ax29, axiom, (![VAR_P : (glob_Nat > $o)]: ((glob_All__uniq_4883__uniq_4910 @
 thf(ax30, axiom, (![VAR_P : (glob_Nat > $o)]: (![VAR_x : glob_Nat]: (![VAR_xs : glob_List__uniq_4633]: ((VAR_P @ VAR_x) => (((glob_All__uniq_4883__uniq_4910 @ VAR_P) @ VAR_xs) => ((glob_All__uniq_4883__uniq_4910 @ VAR_P) @ ((glob_List_cons__uniq_4633 @ VAR_x) @ VAR_xs)))))))).
 -/
 set_option HoSmt.shouldTranslate true in
-theorem th : (xs : List Nat) -> All (. <= 10) xs -> List.sum xs <= List.length xs * 10 := by
+example : (xs : List Nat) -> All (. <= 10) xs -> List.sum xs <= List.length xs * 10 := by
   smt
+
+set_option HoSmt.reconstruct false in
+set_option HoSmt.shouldTranslate true in
+example : ∀f : Nat -> Nat, f 3 = 4 -> f 3 <= 5 := by smt

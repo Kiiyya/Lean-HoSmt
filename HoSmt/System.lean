@@ -29,16 +29,19 @@ def cmd_cvc5 [Monad m] [MonadOptions m] [MonadLiftT IO m] (input : String) : m O
       "--lang=tptp",
       "--output-lang=smt",
       "--dump-models",
+
       "--dump-proofs",
+      "--proof-format-mode=alethe", -- https://cvc5.github.io/docs/cvc5-1.0.0/proofs/output_alethe.html
+      "--dag-thresh=0", -- required as per cvc5 docs ^
+      "--simplification=none", -- required as per cvc5 docs ^
+      "--proof-granularity=theory-rewrite", -- required as per cvc5 docs ^
+
       s!"--tlimit={timeout * 1000}", -- milliseconds
       "--stats", -- give statistics on exit
-      "--proof-format-mode=alethe", -- https://cvc5.github.io/docs/cvc5-1.0.0/proofs/output_alethe.html
+
       "--full-saturate-quant",
-      -- "--simplification=none",
-      -- "--proof-granularity=theory-rewrite",
       
       -- Options which don't seem to hurt:
-      "--dag-thresh=0",
       -- "--quant-dsplit=agg",
       -- "--inst-when=full",
       -- "--trigger-sel=all",

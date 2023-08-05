@@ -20,3 +20,10 @@ register_option HoSmt.shouldTranslate : Bool := {
   defValue := false
   descr := "(Used for testing only) When translation succeeds and SMT solver parses it but fails to prove, solve with `sorry` anyway."
 }
+
+register_option HoSmt.reconstruct : Bool := {
+  defValue := false,
+  descr := "Should the resulting SMT proof be reconstructed into a Lean proof? If false, just uses `sorry`."
+}
+
+initialize registerTraceClass `HoSmt.Decode

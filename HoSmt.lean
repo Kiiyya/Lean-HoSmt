@@ -5,6 +5,8 @@ import HoSmt.TPTP
 import HoSmt.System
 import HoSmt.Util
 import HoSmt.Options
+-- import HoSmt.Reconstruction
+import HoSmt.Decode.Alethe2
 
 open HoSmt.TPTP
 open HoSmt.Util
@@ -133,6 +135,7 @@ partial def liftLCtxToEnv (goal : MVarId) : TacticM MVarId := goal.withContext d
 def leanToTPTP (auxes : Array Name) : TacticM (String × MVarId) := do
   -- # Lift LCtx into their own env items
   let goal <- liftLCtxToEnv (<- getMainGoal)
+  trace[HoSmt] "leanToTPTP goal is {Expr.mvar goal}"
 
   goal.withContext do
     -- # Translate (most heavy lifting happens here)
@@ -149,16 +152,26 @@ def leanToTPTP (auxes : Array Name) : TacticM (String × MVarId) := do
       TPTP.addGoal goal'
     return (tptp, goal')
 
-
-def HoSmt (auxes : Array Name) : TacticM Unit := do
+open HoSmt.Decode.Alethe2 in
+def hammer (auxes : Array Name) : TacticM Unit := do
   let (tptp, goal') <- leanToTPTP auxes
   trace[HoSmt] tptp
 
   -- # Run CVC5
   match <- runSMT tptp with
-  | .proof prf => do
-    admitGoal goal' -- "sorry" (no proof reconstruction yet)
-    logInfo m!"PROOF:\n{prf}"
+  | .proof prf_string => do
+    logInfo m!"PROOF:\n{prf_string}"
+
+    -- Just for debugging/testing, you can disable proof reconstruction with an option entirely:
+    unless HoSmt.reconstruct.get (<- getOptions) do
+      admitGoal goal'
+      return
+
+    withAlethe2OpenDecl do
+      let `(aproof| unsat $cmds*) <- IO.ofExcept <| Parser.runParserCategory (<- getEnv) `aproof prf_string
+        | throwError "failed to parse alethe proof"
+      smtHarness cmds
+
   | .contra contra => do
     throwError "CONTRADICTON:\n{contra}"
   | .gaveUp msg => do
@@ -170,7 +183,9 @@ def HoSmt (auxes : Array Name) : TacticM Unit := do
 
 syntax smtArgs := "[" (ident <|> term),* "]"
 
-elab "smt " noEnvSandbox?:"noEnvSandbox "? auxes?:(smtArgs)? : tactic => do
+elab "smt " auxes?:(smtArgs)? : tactic => do
+  trace[HoSmt] "Original goal mvar is {Expr.mvar (<- getMainGoal)}"
+
   -- Add auxiliary lemmas explicitly provided by the user.
   let auxes <- auxes? |>.map (fun x => x.raw[1]) |>.map Syntax.getSepArgs |>.getD #[] |>.mapM fun aux => do
     if let .ident _ _ th .. := aux then return th
@@ -178,11 +193,8 @@ elab "smt " noEnvSandbox?:"noEnvSandbox "? auxes?:(smtArgs)? : tactic => do
     if let some (name, _) := aux.const? then return name
     else defineExpression aux
 
-  if noEnvSandbox?.isSome then
-    HoSmt auxes
-  else
-    withEnvSandbox do
-      HoSmt auxes
+  withEnvSandbox do
+    hammer auxes
 
 elab "#reprove " name:ident auxes?:(smtArgs)? : command => do
   Command.liftTermElabM do
@@ -199,7 +211,7 @@ elab "#reprove " name:ident auxes?:(smtArgs)? : command => do
     let goal <- Meta.mkFreshExprMVar (some info.type)
       let _outputGoals <- Tactic.run (goal.mvarId!) do
         withEnvSandbox do
-          HoSmt auxes
+          hammer auxes
 
 -- open Lean Meta in
 -- elab "#translate" name:ident : command => do

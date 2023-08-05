@@ -14,6 +14,7 @@ initialize registerTraceClass `HoSmt.Encoding.traverse
 
 def primitives := [``outParam, ``optParam,
   ``Eq, ``HEq, ``Iff, ``Iff.mp, ``Iff.mpr, ``Bool, ``true, ``false, ``Not, ``And, ``Or, ``Exists,
+  ``True, ``False,
   ``sorryAx, 
   ``Subtype, ``Subtype.mk, ``Subtype.val, ``Subtype.property,
   ``Decidable, ``Decidable.isTrue, ``Decidable.isFalse
